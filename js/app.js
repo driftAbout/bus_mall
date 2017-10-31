@@ -1,11 +1,10 @@
 'use strict';
 
+var product;
 //variable for object key
 var imageKey;
-//variable for constructing an object key and image id
-var key_prefix = 'img_';
-//Object to be popolated with product objects
-var allProducts = {};
+//Object to be popolated with product objects and an array of keys
+var allProducts = {productKeys:[]};
 
 //list of images
 var imageNames = ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakfast.jpg', 'bubblegum.jpg', 'chair.jpg', 'cthulhu.jpg', 'dog-duck.jpg', 'dragon.jpg', 'pen.jpg', 'pet-sweep.jpg', 'scissors.jpg', 'shark.jpg', 'sweep.png', 'tauntaun.jpg', 'unicorn.jpg', 'usb.gif', 'water-can.jpg', 'wine-glass.jpg'];
@@ -79,9 +78,10 @@ Product.prototype.createDataRow = function(){
 //function to create objects
 function initProgram(){
   for (var i = 0; i < imageCount; i++){
-    //store product in ibject with a key
-    imageKey = key_prefix + i;
-    allProducts[imageKey] = new Product(imageNames[i]);
+    //put product in an object with a key of product name
+    product = new Product(imageNames[i]);
+    allProducts[product.productName] = product;
+    allProducts.productKeys.push(product.productName);
   }
   // first show choice
   initRound();
@@ -103,8 +103,8 @@ function initRound(){
   var randomIndexes = uniqueRandomNumbers(imageCount, 0);
   //loop through arry of indexes
   for(var i = 0; i < randomIndexes.length; i++){
-    //create fetch key with index the number
-    imageKey = key_prefix + randomIndexes[i];
+    //create fetch key using index of key array
+    imageKey = allProducts.productKeys[randomIndexes[i]];
     //get Product object with key and incriment view counter
     allProducts[imageKey].viewCounter();
     imgSrc = allProducts[imageKey].imagePath;
@@ -177,7 +177,7 @@ function logResults(){
   var newTable = document.createElement('table');
   var tbody = document.createElement('tbody');
   for( var i = 0; i < imageCount; i++){
-    imageKey = key_prefix + i;
+    imageKey = allProducts.productKeys[i];
     tbody.appendChild(allProducts[imageKey].dataRow);
   }
   newTable.appendChild(tbody);
