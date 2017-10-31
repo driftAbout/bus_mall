@@ -1,44 +1,49 @@
 'use strict';
 
+//variable for object key
 var imageKey;
-var imageName;
+//variable for constructing an object key and image id
 var key_prefix = 'img_';
+//Object to be popolated with product objects
 var allProducts = {};
-var randomIndex;
-var productObj;
-var getKey;
-// var imagePath_list = ['images/bag.jpg', 'images/banana.jpg', 'images/bathroom.jpg', 'images/boots.jpg', 'images/breakfast.jpg', 'images/bubblegum.jpg', 'images/chair.jpg', 'images/cthulhu.jpg', 'images/dog-duck.jpg', 'images/dragon.jpg', 'images/pen.jpg', 'images/pet-sweep.jpg', 'images/scissors.jpg', 'images/shark.jpg', 'images/sweep.png', 'images/tauntaun.jpg', 'images/unicorn.jpg', 'images/usb.gif', 'images/water-can.jpg', 'images/wine-glass.jpg'];
 
-var imageNames = ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakfast.jpg', 'bubblegum.jpg', 'chair.jpg', 'cthulhu.jpg', 'dog-duck.jpg', 'dragon.jpg', 'pen.jpg', 'pet-sweep.jpg', 'scissors.jpg', 'shark.jpg', 'sweep.png', 'tauntaun.jpg', 'unicorn.jpg', 'usb.gif', 'water-can.jpg', 'wine-glass.jpg']
+//list of images
+var imageNames = ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakfast.jpg', 'bubblegum.jpg', 'chair.jpg', 'cthulhu.jpg', 'dog-duck.jpg', 'dragon.jpg', 'pen.jpg', 'pet-sweep.jpg', 'scissors.jpg', 'shark.jpg', 'sweep.png', 'tauntaun.jpg', 'unicorn.jpg', 'usb.gif', 'water-can.jpg', 'wine-glass.jpg'];
 
+//length of image array for iterating
 var imageCount = imageNames.length;
+//target element for loaded images
 var image_display = document.getElementById('image_display');
+//targert element for table data
 var resultsSection = document.getElementById('results_section');
-
-var previous_unique = [];
+// array to hold unique index numbers
 var unique_Nums;
-
-var targetImages;
-
+// array to hold previous set of unique index numbers
+var previous_unique = [];
+// session counter
 var roundCount = 0;
 var totalRounds = 25;
-var imagesPerRound = 3;
 
+//time delay between choices
 var timeDelay = 500;
 var delayedTime;
+var targetImages;
 
 
 /*****************************************/
 /*** Build Product Object Constructor ***/
 function Product(fileName){
   this.fileName = fileName;
+  //filename without ext
   this.productName;
+  //path to images folder
   this.imageFolder = 'images';
+  //full path to image
   this.imagePath;
   this.views = 0;
   this.clicks = 0;
   this.percentSelected = 0;
-  this.tallyString = "votes for the";
+  this.tallyString = 'votes for the';
   this.dataRow;
   this.createImageInfo();
 };
@@ -47,7 +52,7 @@ Product.prototype.createImageInfo = function(){
   this.imagePath = this.imageFolder + '/' + this.fileName;
   var nameParts = this.fileName.split('.');
   this.productName = nameParts[0];
-  this.createDataRow()
+  this.createDataRow();
 };
 
 Product.prototype.viewCounter = function(){
@@ -58,16 +63,14 @@ Product.prototype.clickCounter = function(){
   this.clicks++;
   this.percentSelected = Math.round((this.clicks / this.views) * 1000) / 10;
   this.createDataRow();
-  //this.tallyMessage = this.clicks + ' votes for ' + this.productName;
 };
 
 Product.prototype.createDataRow = function(){
   var dataRow = document.createElement('tr');
-  console.log(this.productName)
   var dataArray = [this.clicks, this.tallyString, this.productName];
   var dataString = '<tr><td>' + dataArray.join('</tr><td>') + '</tr></td>';
   dataRow.innerHTML = dataString;
-  this.dataRow =  dataRow;
+  this.dataRow = dataRow;
 };
 /*****End Product Constructor******/
 /**********************************/
@@ -76,9 +79,11 @@ Product.prototype.createDataRow = function(){
 //function to create objects
 function initProgram(){
   for (var i = 0; i < imageCount; i++){
+    //store product in ibject with a key
     imageKey = key_prefix + i;
     allProducts[imageKey] = new Product(imageNames[i]);
   }
+  // first show choice
   initRound();
 }
 
@@ -86,17 +91,21 @@ function initProgram(){
 //Function to add images to the page
 function initRound(){
   roundCount++;
-  console.log('roundCount', roundCount);
+  //quit giving choices after the number of rounds is done
   if (roundCount > totalRounds){
+    image_display.classList.add('close');
     logResults();
     return;
   }
   var newImageElement;
   var imgSrc;
+  //fetch an array of 3 random indexes
   var randomIndexes = uniqueRandomNumbers(imageCount, 0);
-
+  //loop through arry of indexes
   for(var i = 0; i < randomIndexes.length; i++){
+    //create fetch key with index the number
     imageKey = key_prefix + randomIndexes[i];
+    //get Product object with key and incriment view counter
     allProducts[imageKey].viewCounter();
     imgSrc = allProducts[imageKey].imagePath;
     newImageElement = document.createElement('img');
@@ -104,6 +113,7 @@ function initRound(){
     newImageElement.setAttribute('src', imgSrc);
     image_display.appendChild(newImageElement);
   }
+  //add event listeners to newly created images
   initListeners();
 }
 
@@ -114,6 +124,7 @@ function goAgain(){
 }
 
 //Function to generate three unique numbers and unique from previous round
+//creats array of unique numbers and compares them to previous unique arrray
 function uniqueRandomNumbers(max_num , min_num){
   var randomNUm;
   unique_Nums = [];
@@ -131,6 +142,7 @@ function uniqueRandomNumbers(max_num , min_num){
 
 //create evenlisteners
 function initListeners(){
+  //loop through each img element and add event listener
   targetImages = image_display.getElementsByTagName('img');
   for (var t = 0; t < targetImages.length; t++){
     targetImages[t].addEventListener('click', registerClick);
@@ -139,14 +151,15 @@ function initListeners(){
 
 function registerClick(e){
   e.preventDefault();
+  //only register clicks on images with out an updated class
   if( ! this.classList.contains('selected') && ! this.classList.contains('rejected') ){
     this.classList.add('selected');
     var imageId = this.getAttribute('id');
+    //inciment click counter
     allProducts[imageId].clickCounter();
-    //var allImageTags = this.parentNode.childNodes;
+    // get array of img tags
+    //remove event listeners and mark non selected images as rejected
     var allImageTags = image_display.getElementsByTagName('img');
-    console.log('allImageTags', allImageTags);
-
     for (var i = 0; i < allImageTags.length; i++){
       allImageTags[i].removeEventListener('click', registerClick);
       if (this != allImageTags[i]){
@@ -154,10 +167,12 @@ function registerClick(e){
       }
     }
   }
-//another round
+  //set a deleay before moving on to the next set of choices
   delayedTime = window.setTimeout(goAgain, timeDelay);
 }
 
+
+//function to build table of votes
 function logResults(){
   var newTable = document.createElement('table');
   var tbody = document.createElement('tbody');
@@ -166,23 +181,8 @@ function logResults(){
     tbody.appendChild(allProducts[imageKey].dataRow);
   }
   newTable.appendChild(tbody);
-  console.log(tbody);
-  console.log(resultsSection);
   resultsSection.appendChild(newTable);
 }
 
-
-
 initProgram();
-
-
-/*
-for (var j = 0; j < 1; j++) {
-  initRound();
-  console.log('unique_Num', unique_Nums);
-  console.log('previous_unique', previous_unique);
-}
-
-initListeners();
-*/
 console.log('allProducts', allProducts);
