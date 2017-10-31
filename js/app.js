@@ -13,7 +13,7 @@ var imageNames = ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakfa
 
 var imageCount = imageNames.length;
 var image_display = document.getElementById('image_display');
-var resultsTable = document.getElementById('results_table')
+var resultsSection = document.getElementById('results_section');
 
 var previous_unique = [];
 var unique_Nums;
@@ -39,7 +39,7 @@ function Product(fileName){
   this.clicks = 0;
   this.percentSelected = 0;
   this.tallyString = "votes for the";
-  this.dataRow = this.createDataRow();
+  this.dataRow;
   this.createImageInfo();
 };
 
@@ -47,13 +47,7 @@ Product.prototype.createImageInfo = function(){
   this.imagePath = this.imageFolder + '/' + this.fileName;
   var nameParts = this.fileName.split('.');
   this.productName = nameParts[0];
-};
-
-Product.prototype.getImageNames = function(){
-  var imagePath_parts = this.imagePath.split('/');
-  this.fileName = imagePath_parts[imagePath_parts.length - 1];
-  var nameParts = this.fileName.split('.');
-  this.productName = nameParts[0];
+  this.createDataRow()
 };
 
 Product.prototype.viewCounter = function(){
@@ -63,15 +57,17 @@ Product.prototype.viewCounter = function(){
 Product.prototype.clickCounter = function(){
   this.clicks++;
   this.percentSelected = Math.round((this.clicks / this.views) * 1000) / 10;
+  this.createDataRow();
   //this.tallyMessage = this.clicks + ' votes for ' + this.productName;
 };
 
 Product.prototype.createDataRow = function(){
-  var dataRow = createElement('tr');
+  var dataRow = document.createElement('tr');
+  console.log(this.productName)
   var dataArray = [this.clicks, this.tallyString, this.productName];
-  var dataString = '<tr><td>' + dataArray + '</tr></td>';
+  var dataString = '<tr><td>' + dataArray.join('</tr><td>') + '</tr></td>';
   dataRow.innerHTML = dataString;
-  return dataRow;
+  this.dataRow =  dataRow;
 };
 /*****End Product Constructor******/
 /**********************************/
@@ -91,22 +87,24 @@ function initProgram(){
 function initRound(){
   roundCount++;
   console.log('roundCount', roundCount);
-  if (roundCount <=  totalRounds){
-    var newImageElement;
-    var imgSrc;
-    var randomIndexes = uniqueRandomNumbers(imageCount, 0);
-
-    for(var i = 0; i < randomIndexes.length; i++){
-      imageKey = key_prefix + randomIndexes[i];
-      allProducts[imageKey].viewCounter();
-      imgSrc = allProducts[imageKey].imagePath;
-      newImageElement = document.createElement('img');
-      newImageElement.setAttribute('id', imageKey);
-      newImageElement.setAttribute('src', imgSrc);
-      image_display.appendChild(newImageElement);
-    }
-    initListeners();
+  if (roundCount > totalRounds){
+    logResults();
+    return;
   }
+  var newImageElement;
+  var imgSrc;
+  var randomIndexes = uniqueRandomNumbers(imageCount, 0);
+
+  for(var i = 0; i < randomIndexes.length; i++){
+    imageKey = key_prefix + randomIndexes[i];
+    allProducts[imageKey].viewCounter();
+    imgSrc = allProducts[imageKey].imagePath;
+    newImageElement = document.createElement('img');
+    newImageElement.setAttribute('id', imageKey);
+    newImageElement.setAttribute('src', imgSrc);
+    image_display.appendChild(newImageElement);
+  }
+  initListeners();
 }
 
 function goAgain(){
@@ -161,19 +159,22 @@ function registerClick(e){
 }
 
 function logResults(){
-  var newTable = createElement('table');
-  var tbody = createElement('tbody');
-  for( var  = 0; i < imageCount; i++){
+  var newTable = document.createElement('table');
+  var tbody = document.createElement('tbody');
+  for( var i = 0; i < imageCount; i++){
     imageKey = key_prefix + i;
     tbody.appendChild(allProducts[imageKey].dataRow);
   }
-  newTable.appendChild(imageKey);
-  resultsTable.appendChild(imageKey)
+  newTable.appendChild(tbody);
+  console.log(tbody);
+  console.log(resultsSection);
+  resultsSection.appendChild(newTable);
 }
 
 
 
 initProgram();
+
 
 /*
 for (var j = 0; j < 1; j++) {
