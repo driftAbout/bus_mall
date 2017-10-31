@@ -1,1 +1,42 @@
 /*style some stuff*/
+main {
+  width:  960px;
+  margin:0 auto;
+}
+
+#image_display {
+  width: 960px;
+  margin:0 auto;
+}
+
+#results_section {
+  width: 960px;
+  margin:0 auto;
+}
+
+img{
+  display:  block;
+  height: 270px;
+  width:  270px;
+  margin-top: 20px;
+  margin-right: 20px;
+  float:  left;
+}
+
+img.rejected {
+  opacity:.5;
+  transition; 150ms;
+}
+
+
+table {
+  border-collapse: collapse;
+}
+
+td {
+  padding:5px;
+}
+
+tbody{
+    padding:20px;
+}
