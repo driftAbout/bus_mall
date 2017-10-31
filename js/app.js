@@ -3,8 +3,10 @@
 var product;
 //variable for object key
 var imageKey;
-//Object to be popolated with product objects and an array of keys
-var allProducts = {productKeys:[]};
+//Object to be popolated with product objects
+var allProducts = {};
+//array of product keys;
+var productKeys;
 
 //list of images
 var imageNames = ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakfast.jpg', 'bubblegum.jpg', 'chair.jpg', 'cthulhu.jpg', 'dog-duck.jpg', 'dragon.jpg', 'pen.jpg', 'pet-sweep.jpg', 'scissors.jpg', 'shark.jpg', 'sweep.png', 'tauntaun.jpg', 'unicorn.jpg', 'usb.gif', 'water-can.jpg', 'wine-glass.jpg'];
@@ -81,8 +83,9 @@ function initProgram(){
     //put product in an object with a key of product name
     product = new Product(imageNames[i]);
     allProducts[product.productName] = product;
-    allProducts.productKeys.push(product.productName);
   }
+  //get array of product keys
+  productKeys = Object.keys(allProducts);
   // first show choice
   initRound();
 }
@@ -104,7 +107,7 @@ function initRound(){
   //loop through arry of indexes
   for(var i = 0; i < randomIndexes.length; i++){
     //create fetch key using index of key array
-    imageKey = allProducts.productKeys[randomIndexes[i]];
+    imageKey = productKeys[randomIndexes[i]];
     //get Product object with key and incriment view counter
     allProducts[imageKey].viewCounter();
     imgSrc = allProducts[imageKey].imagePath;
@@ -177,7 +180,7 @@ function logResults(){
   var newTable = document.createElement('table');
   var tbody = document.createElement('tbody');
   for( var i = 0; i < imageCount; i++){
-    imageKey = allProducts.productKeys[i];
+    imageKey = productKeys[i];
     tbody.appendChild(allProducts[imageKey].dataRow);
   }
   newTable.appendChild(tbody);
@@ -186,3 +189,87 @@ function logResults(){
 
 initProgram();
 console.log('allProducts', allProducts);
+
+console.log('productKeys', productKeys);
+
+
+/**********************************************/
+/**************Chart Constructor *************/
+var chartType = 'bar';
+var percent_background_color = '';
+var percent_border_color = '';
+var views_background_color = '';
+var views_border_color = '';
+var clicked_background_color = '';
+var clicked_border_color = '';
+
+function ChartDataSet(dataObject ){
+  this.product_data_object = dataObject;
+  this.type = chartType;
+  this.labels = Object.keys(this.product_data_object);
+  this.keyCount = this.labels.length;
+  this.dataSets = [this.percent_data_set, this.views_data_set, this.clicked_data_set];
+  this.percent_data_set = {
+    label: 'Percent Selected',
+    yAxisID: 'percent_axis',
+    backgroundColor: percent_background_color,
+    borderColor: percent_border_color,
+    data: []
+  };
+  this.views_data_set = {
+    label: 'Product Views',
+    yAxisID: 'rounds_axis',
+    backgroundColor: views_background_color,
+    borderColor: views_border_color,
+    data: []
+  };
+  this.clicked_data_set = {
+    label: 'Product Views',
+    yAxisID: 'rounds_axis',
+    backgroundColor: clicked_background_color,
+    borderColor: clicked_border_color,
+    data: []
+  };
+  this.xAxes = [{
+    barThickness: 20,
+    categoryPercentage: .1,
+    barPercentage: 1
+  }];
+  this.percent_axis = {
+    id: 'percent_axis',
+    type: 'linear',
+    position: 'right',
+    ticks: {
+      suggestedMax: 100,
+      min: 0
+    }
+  };
+  this.rounds_axis = {
+    id: 'rounds_axis',
+    type: 'linear',
+    position: 'right',
+    ticks: {
+      suggestedMax: totalRounds,
+      min: 0
+    }
+  };
+  this.options = {
+    scales: {
+      yAxes:[this.percent_axis, this.rounds_axis],
+      xAxes:[this.xAxes]
+    }
+  };
+  this.chartData = {labels: this.labels, datasets:  this.dataSets};
+  this.chartParams = {type: this.type, data: chartData, options: this.options};
+  this.processProductData();
+}
+
+ChartDataSet.prototype.processProductData = function(){
+  var prodData;
+  for (var i = 0; i < this.keyCount; i++){
+    prodData = this.product_data_object[this.labels[i]];
+    percent_data_set.data.push(prodData.percentSelected);
+    views_data_set.data.push(prodData.this.views);
+    clicked_data_set.data.push(prodData);
+  }
+};
