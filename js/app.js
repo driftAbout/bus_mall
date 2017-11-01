@@ -15,15 +15,16 @@ var imageNames = ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakfa
 var imageCount = imageNames.length;
 //target element for loaded images
 var image_display = document.getElementById('image_display');
-//targert element for table data
-var resultsSection = document.getElementById('results_section');
+//targert element for chart
+var canvas = document.getElementById('results_chart');
+var ctx = canvas.getContext('2d');
 // array to hold unique index numbers
 var unique_Nums;
 // array to hold previous set of unique index numbers
 var previous_unique = [];
 // session counter
 var roundCount = 0;
-var totalRounds = 25;
+var totalRounds = 3;
 
 //time delay between choices
 var timeDelay = 500;
@@ -174,7 +175,13 @@ function registerClick(e){
   delayedTime = window.setTimeout(goAgain, timeDelay);
 }
 
+function logResults(){
+  var chartParamiters = new ChartDataSet(allProducts).chartParams;
+  var chart = new Chart(ctx, chartParamiters);
+  console.log('chartParamiters', chartParamiters);
+}
 
+/*
 //function to build table of votes
 function logResults(){
   var newTable = document.createElement('table');
@@ -186,6 +193,7 @@ function logResults(){
   newTable.appendChild(tbody);
   resultsSection.appendChild(newTable);
 }
+*/
 
 initProgram();
 console.log('allProducts', allProducts);
@@ -196,19 +204,22 @@ console.log('productKeys', productKeys);
 /**********************************************/
 /**************Chart Constructor *************/
 var chartType = 'bar';
-var percent_background_color = '';
-var percent_border_color = '';
-var views_background_color = '';
-var views_border_color = '';
-var clicked_background_color = '';
-var clicked_border_color = '';
+var percent_background_color = '#C3B867';
+var percent_border_color = '#000000';
+var views_background_color = '#767254';
+var views_border_color = '#767254';
+var clicked_background_color = '#F7D50A';
+var clicked_border_color = '#000000';
+var roundsAxes_labelString = 'Number of Selection Rounds';
+var percentAxes_labelString = 'Percentage of Clicks / View';
+var yAxes_fontSize = 18;
 
-function ChartDataSet(dataObject ){
+
+function ChartDataSet(dataObject){
   this.product_data_object = dataObject;
   this.type = chartType;
   this.labels = Object.keys(this.product_data_object);
   this.keyCount = this.labels.length;
-  this.dataSets = [this.percent_data_set, this.views_data_set, this.clicked_data_set];
   this.percent_data_set = {
     label: 'Percent Selected',
     yAxisID: 'percent_axis',
@@ -224,14 +235,14 @@ function ChartDataSet(dataObject ){
     data: []
   };
   this.clicked_data_set = {
-    label: 'Product Views',
+    label: 'Product Selections',
     yAxisID: 'rounds_axis',
     backgroundColor: clicked_background_color,
     borderColor: clicked_border_color,
     data: []
   };
   this.xAxes = [{
-    barThickness: 20,
+    barThickness: 30,
     categoryPercentage: .1,
     barPercentage: 1
   }];
@@ -239,6 +250,7 @@ function ChartDataSet(dataObject ){
     id: 'percent_axis',
     type: 'linear',
     position: 'right',
+    scaleLabel: {labelString: percentAxes_labelString, display: true, fontSize: yAxes_fontSize},
     ticks: {
       suggestedMax: 100,
       min: 0
@@ -247,7 +259,8 @@ function ChartDataSet(dataObject ){
   this.rounds_axis = {
     id: 'rounds_axis',
     type: 'linear',
-    position: 'right',
+    position: 'left',
+    scaleLabel: {labelString: roundsAxes_labelString, display: true, fontSize: yAxes_fontSize},
     ticks: {
       suggestedMax: totalRounds,
       min: 0
@@ -259,17 +272,19 @@ function ChartDataSet(dataObject ){
       xAxes:[this.xAxes]
     }
   };
-  this.chartData = {labels: this.labels, datasets:  this.dataSets};
-  this.chartParams = {type: this.type, data: chartData, options: this.options};
   this.processProductData();
+  this.dataSets = [this.percent_data_set, this.views_data_set, this.clicked_data_set];
+  this.chartData = {labels: this.labels, datasets:  this.dataSets};
+  this.chartParams = {type: this.type, data: this.chartData, options: this.options};
+
 }
 
 ChartDataSet.prototype.processProductData = function(){
   var prodData;
   for (var i = 0; i < this.keyCount; i++){
     prodData = this.product_data_object[this.labels[i]];
-    percent_data_set.data.push(prodData.percentSelected);
-    views_data_set.data.push(prodData.this.views);
-    clicked_data_set.data.push(prodData);
+    this.percent_data_set.data.push(prodData.percentSelected);
+    this.views_data_set.data.push(prodData.views);
+    this.clicked_data_set.data.push(prodData.clicks);
   }
 };
