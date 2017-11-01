@@ -16,6 +16,7 @@ header{
   top: 0;
   /*background-color: #F7D50A;*/
   background: #252525;
+  z-index: 9;
 }
 
 header section{
@@ -24,7 +25,7 @@ header section{
   height: 100px;
 }
 
-header h1{
+header h1 {
   font-family: 'Faster One', cursive;
   font-size: 90px;
   text-transform: capitalize;
@@ -73,31 +74,124 @@ footer p {
   color: #999;
 }
 
-#image_display.close {
+
+/*#image_display.close {
   height: 0;
   overflow: hidden;
   tramsform: 350ms;
-}
+}*/
 
 #image_display {
+  width: 960px;
+  max-height:400px;
+  margin:0px auto;
+  margin-left: 55px;
+  /*overflow: visible;*/
+}
+
+#selections.close{
+  width:0;
+  height:0
+  overflow: hidden;
+  opacity: 0;
+}
+
+#selections, #welcome{
+  opacity: 1;
   width: 960px;
   height:400px;
   margin:0px auto;
   padding-top:40px;
+  border: 2px solid #F7D50A;
+  border-radius: 5px;
+  margin-top: 40px;
+  background: #eee;
+  box-shadow: #777 1px 1px 10px -4px;
   overflow: visible;
+  position: absolute;
 }
 
-#image_display h2 {
+#selections h2 {
   font-family: helvetica;
   font-size:30px;
   color: #777;
   text-align:center;
-  margin-bottom: 60px;
+  margin-bottom: 20px;
+}
+
+#welcome.close {
+  overflow:hidden;
+  height:0;
+  width:0;
+  opacity:0;
+  transition: 350ms all;
+}
+
+#welcome {
+  text-align: center;
+}
+
+#welcome p {
+  margin:0 auto;
+  width: 430px;
+  font-size: 18px;
+  line-height: 24px;
+  color: #252525;
+  font-family: helvetica;
+}
+
+#welcome p:nth-child(2){
+  font-size:40px;
+  margin-bottom:20px;
+}
+
+#welcome p:first-of-type {
+  font-family: 'Faster One', cursive;
+  font-size: 90px;
+  text-transform: capitalize;
+  margin-top:40px;
+  margin-bottom:50px;
+}
+
+#welcome p span:first-of-type{
+  font-size: 60px;
+  text-transform: lowercase;
+}
+
+#welcome p:last-of-type {
+  margin-top: 20px;
+}
+
+#start {
+  cursor: pointer;
+  padding:20px;
+  margin-top:20px;
+  background-color: #F7D50A;
+  color: #252525;
+  font-size:24px;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-style:none;
+  border-radius:5px;
+  border: 2px solid #ddd;
+}
+
+
+#results.close {
+  width:0;
+  height:0;
+  opacity:0;
+  overflow: hidden;
 }
 
 #results {
+  opacity: 1;
+  overflow: visible;
   width: 960px;
+  max-height: 500px;
   margin:0 auto;
+  margin-top: 20px;
+  position: absolute;
 }
 
 img{
@@ -108,6 +202,9 @@ img{
   margin-right: 20px;
   float:  left;
   cursor: pointer;
+  border-radius:5px;
+  box-shadow: #777 1px 1px 10px -4px;
+
 }
 
 img.rejected {
@@ -115,6 +212,25 @@ img.rejected {
   transition; 150ms;
 }
 
+#small_image.close{
+  opacity:0;
+  height:0;
+  width:0;
+  overflow: hiden;
+}
+#small_image{
+  position:absolute;
+  height:200px;
+  width: 200px;
+  opacity: 1;
+  overflow:visible
+
+}
+#small_image img {
+  height:120px;
+  width:120px;
+  padding:40px;
+}
 
 table {
   border-collapse: collapse;

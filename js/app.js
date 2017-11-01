@@ -13,11 +13,21 @@ var imageNames = ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakfa
 
 //length of image array for iterating
 var imageCount = imageNames.length;
+//selections contains the image section
+var selections = document.getElementById('selections');
 //target element for loaded images
 var image_display = document.getElementById('image_display');
+//section containing canvas
+var results_container = document.getElementById('results');
 //targert element for chart
 var canvas = document.getElementById('results_chart');
 var ctx = canvas.getContext('2d');
+var chart;
+
+var welcome = document.getElementById('welcome');
+var start = document.getElementById('start');
+
+
 // array to hold unique index numbers
 var unique_Nums;
 // array to hold previous set of unique index numbers
@@ -59,6 +69,8 @@ Product.prototype.createImageInfo = function(){
 
 Product.prototype.viewCounter = function(){
   this.views++;
+  this.percentSelected = Math.round((this.clicks / this.views) * 1000) / 10;
+  this.createDataRow();
 };
 
 Product.prototype.clickCounter = function(){
@@ -77,9 +89,20 @@ Product.prototype.createDataRow = function(){
 /*****End Product Constructor******/
 /**********************************/
 
+//start the selection process on click of the start button (AMAZE ME)
+function welcome_start(){
+  start.addEventListener('click', initProgram);
+}
+
 
 //function to create objects
 function initProgram(){
+  console.log('click');
+  //hide the welcome window
+  welcome.classList.add('close');
+  //show the selections section
+  selections.classList.remove('close');
+
   for (var i = 0; i < imageCount; i++){
     //put product in an object with a key of product name
     product = new Product(imageNames[i]);
@@ -176,9 +199,32 @@ function registerClick(e){
 }
 
 function logResults(){
+  //hide selections window
+  selections.classList.add('close');
+  results_container.classList.remove('close');
   var chartParamiters = new ChartDataSet(allProducts).chartParams;
-  var chart = new Chart(ctx, chartParamiters);
+  chart = new Chart(ctx, chartParamiters);
   console.log('chartParamiters', chartParamiters);
+  canvas.addEventListener('click', clickHandler);
+}
+
+function clickHandler(evt) {
+  var item = chart.getElementAtEvent(evt)[0];
+  if (item) {
+    var label = item._view.label;
+    var item_imagePath = allProducts[label].imagePath;
+    console.log('item_imagePath', item_imagePath);
+    displayImage(item_imagePath);
+  }
+}
+
+function displayImage(path){
+  var image_div = document.getElementById('small_image');
+  var small_image = document.createElement('img');
+  small_image.setAttribute('src', path);
+  small_image.addEventListener('click', function(){image_div.classList.add('close');});
+  image_div.appendChild(small_image);
+  image_div.classList.remove('close');
 }
 
 /*
@@ -195,7 +241,7 @@ function logResults(){
 }
 */
 
-initProgram();
+welcome_start()
 console.log('allProducts', allProducts);
 
 console.log('productKeys', productKeys);
