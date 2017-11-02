@@ -85,7 +85,7 @@ footer p {
   transition: 350ms;
 }
 
-#selections, #welcome{
+#selections, #welcome, #logo_large{
   opacity: 1;
   width: 960px;
   height: 400px;
@@ -108,7 +108,7 @@ footer p {
   margin-bottom: 20px;
 }
 
-#welcome.close {
+#welcome.close, #logo_large.close {
   overflow: hidden;
   height: 0;
   width: 0;
@@ -192,6 +192,29 @@ footer p {
   margin-top: 20px;
   position: absolute;
 }
+
+#logo_large {
+  border: none;
+  border-radius: 0;
+  background: #FFF;
+  box-shadow: none;
+  text-align:center;
+}
+
+
+
+#logo_large h2 {
+  font-family: 'Faster One', cursive;
+  font-size: 180px;
+  text-transform: capitalize;
+  color: #000;
+}
+
+#logo_large  h2 span:first-of-type{
+  font-size: 120px;
+  text-transform: lowercase;
+}
+
 
 img{
   display:  block;

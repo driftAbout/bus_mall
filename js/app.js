@@ -24,9 +24,19 @@ var image_display = document.getElementById('image_display');
 
 
 var welcome = document.getElementById('welcome');
-var start = document.getElementById('start');
+var start_btn = document.getElementById('start');
 var image_div = document.getElementById('small_image');
 var save_session_btn = document.getElementById('save_session_btn');
+
+var greeting_salutation = document.getElementById('greeting_salutation');
+var greeting_salutation_text = 'Welcomes You!';
+var participation_message = document.getElementById('participation_message');
+var participation_message_text = 'You have been selected to participate in our survey because you are currently on a bus stuck in traffic!';
+var click_message = document.getElementById('click_message');
+var click_message_text = 'Click to get started.';
+var start_btn_text = 'amaze me';
+
+var logo_large = document.getElementById('logo_large');
 
 //elements to Access persistant data chart
 var all_data_login = document.getElementById('all_data_login');
@@ -48,6 +58,8 @@ var totalRounds = 3;
 
 //time delay between choices
 var timeDelay = 500;
+//reference to seeTimeout used to clear the timeout
+var timeoutID;
 var targetImages;
 
 //**********chart stuff *****************///
@@ -111,17 +123,67 @@ Product.prototype.calulatePercentage = function(){
 /*****End Product Constructor******/
 /**********************************/
 
+//set messages for Greeting
+function setStartMessage() {
+  //change the messages if there is a stored session
+  if (localStorage.sessionDataStorage) {
+    participation_message_text = 'Thank you for returning to finish our survey.  Traffic obviously let up and you made it home!';
+    click_message_text = 'Click to resume session.';
+    start_btn_text = 'Resume';
+  }
+  greeting_salutation.textContent = greeting_salutation_text;
+  participation_message.textContent = participation_message_text;
+  click_message.textContent = click_message_text;
+  start_btn.textContent = start_btn_text;
+}
+
+function setThankYouMessage(){
+  participation_message_text = 'Thank you for finishing our survey .  Keep an eye out for the first edition of Bus Mall!';
+  click_message_text = 'Click to see results';
+  start_btn_text = 'Results';
+  //change the messages if there is a stored session
+  if (localStorage.sessionDataStorage) {
+    participation_message_text = 'Thank you for starting our survey .  Please do not forget to return and finish your session';
+    click_message_text = '';
+    start_btn_text = 'Close';
+  }
+
+  greeting_salutation_text = 'Thanks You';
+  greeting_salutation.textContent = greeting_salutation_text;
+  participation_message.textContent = participation_message_text;
+  click_message.textContent = click_message_text;
+  start_btn.textContent = start_btn_text;
+  // change the event listener
+  setSalutationListener();
+}
+
+function giveThanks(){
+  setThankYouMessage();
+  welcome.classList.remove('close');
+
+};
+
+// change the event listener
+function setSalutationListener() {
+  start_btn.removeEventListener('click', initProgram);
+  if (localStorage.sessionDataStorage) {
+    start_btn.addEventListener('click', function(){
+      welcome.classList.add('close');
+      logo_large.classList.remove('close');
+    });
+  }
+  console.log('Here!');
+  selections.classList.add('close');
+  start_btn.addEventListener('click', logResults);
+}
 
 
 //function to start the selection process on click of the start button (AMAZE ME)
 function welcome_start(){
-  //check for a saved session
-  if (localStorage.sessionDataStorage){
-    start.textContent = 'Resume';
-  }
+  setStartMessage();
   //activate link for persistant chart data
   all_data_link.addEventListener('click', open_all_data_login);
-  start.addEventListener('click', initProgram);
+  start_btn.addEventListener('click', initProgram);
 }
 
 //persistant data chart login functions
@@ -176,6 +238,7 @@ function initProgram(){
   //if there was a saved session the data will load
   //if not it behaves as if a new session
   load_session_data();
+  console.log('sessionDataStorage', sessionDataStorage);
   // show image choices
   initRound();
 }
@@ -184,11 +247,13 @@ function initProgram(){
 //Function to add images to the page
 function initRound(){
   roundCount++;
+  console.log('roundCount: ', roundCount);
   //quit giving choices after the number of rounds is done
   if (roundCount > totalRounds){
     image_display.classList.add('close');
-    save_persistant_data()
-    logResults();
+    save_persistant_data();
+    giveThanks();
+    //logResults();
     return;
   }
   var newImageElement;
@@ -239,7 +304,7 @@ function registerClick(e){
     }
   }
   //set a deleay before moving on to the next set of choices
-  window.setTimeout(goAgain, timeDelay);
+  timeoutID = window.setTimeout(goAgain, timeDelay);
 }
 
 function goAgain(){
@@ -253,7 +318,7 @@ function goAgain(){
 function uniqueRandomNumbers(max_num , min_num){
   var randomNUm;
   unique_Nums = [];
-  if (! saved_unique_Nums.length ){
+  if (saved_unique_Nums.length != 0 ){
     unique_Nums = saved_unique_Nums;
     saved_unique_Nums = [];
   }
@@ -276,7 +341,8 @@ function create_persistantData_chart(){
 //function to iniitiate chart.js
 function logResults(){
   //hide selections window
-  selections.classList.add('close');
+  ///selections.classList.add('close');
+  welcome.classList.add('close');
   results_container.classList.remove('close');
   var chartParamiters = new ChartDataSet(allProducts).chartParams;
   //reset the canvas if it already has a chart
@@ -404,19 +470,29 @@ totalPersistantRounds:
 var sessionDataStorage = {
   productName: {views: clicks:},
   roundCount: ,
+  saved_unique_Nums = []
   previous_unique: []
 };
 */
 
+
 function saveSession(){
+  //clear the time out function so you are not moving along in the code while in a timeout
+  window.clearTimeout(timeoutID);
+  //hide the section containing the images
   selections.classList.add('close');
-  save_session_data();
+  //open thank you message;
+  //wait just a sec
+  window.setTimeout(save_session_data(), timeDelay );
+  giveThanks();
 }
 
 function save_session_data(){
   sessionDataStorage = save_views_clicks();
-  sessionDataStorage.roundCount = roundCount;
+  //subtract 1ß from round count to reset to last view when the sesion was saved
+  sessionDataStorage.roundCount = roundCount - 1;
   sessionDataStorage.previous_unique = previous_unique;
+  sessionDataStorage.saved_unique_Nums = unique_Nums;
   localStorage.sessionDataStorage = JSON.stringify(sessionDataStorage);
 }
 
@@ -432,6 +508,7 @@ function save_persistant_data(){
     }
   }
   if(! persistentDataStorage) persistentDataStorage = sessionData;
+  //the round count ends +1 above the maximum views so subtract 1
   if (isNaN(persistentDataStorage.totalPersistantRounds += (roundCount - 1))) persistentDataStorage.totalPersistantRounds = (roundCount - 1);
   localStorage.persistentDataStorage = JSON.stringify(persistentDataStorage);
 }
@@ -469,9 +546,12 @@ function load_session_data(){
   if (localStorage.sessionDataStorage){
     sessionDataStorage = JSON.parse(localStorage.sessionDataStorage);
     roundCount = sessionDataStorage.roundCount;
-    totalRounds = totalRounds - roundCount;
+    //totalRounds = totalRounds - roundCount;
     previous_unique = sessionDataStorage.previous_unique;
+    saved_unique_Nums = sessionDataStorage.saved_unique_Nums;
     load_views_clicks(sessionDataStorage);
+    //remove the session data
+    localStorage.removeItem('sessionDataStorage');
   }
   return;
 }
