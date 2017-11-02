@@ -166,15 +166,16 @@ function giveThanks(){
 // change the event listener
 function setSalutationListener() {
   start_btn.removeEventListener('click', initProgram);
+  start_btn.addEventListener('click', logResults);
   if (localStorage.sessionDataStorage) {
+    start_btn.removeEventListener('click', logResults);
     start_btn.addEventListener('click', function(){
       welcome.classList.add('close');
       logo_large.classList.remove('close');
     });
   }
-  console.log('Here!');
+
   selections.classList.add('close');
-  start_btn.addEventListener('click', logResults);
 }
 
 
