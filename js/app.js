@@ -27,6 +27,7 @@ var welcome = document.getElementById('welcome');
 var start_btn = document.getElementById('start');
 var image_div = document.getElementById('small_image');
 var save_session_btn = document.getElementById('save_session_btn');
+var close_canvas_btn = document.getElementById('close_canvas_btn');
 
 var greeting_salutation = document.getElementById('greeting_salutation');
 var greeting_salutation_text = 'Welcomes You!';
@@ -35,6 +36,7 @@ var participation_message_text = 'You have been selected to participate in our s
 var click_message = document.getElementById('click_message');
 var click_message_text = 'Click to get started.';
 var start_btn_text = 'amaze me';
+
 
 var logo_large = document.getElementById('logo_large');
 
@@ -54,7 +56,7 @@ var previous_unique = [];
 var saved_unique_Nums = [];
 // session counter
 var roundCount = 0;
-var totalRounds = 3;
+var totalRounds = 25;
 
 //time delay between choices
 var timeDelay = 500;
@@ -80,8 +82,6 @@ var yAxes_fontSize = 18;
 
 //********* start *******//
 welcome_start();
-console.log(' start allProducts', allProducts);
-
 
 /*****************************************/
 /*** Build Product Object Constructor ***/
@@ -123,99 +123,6 @@ Product.prototype.calulatePercentage = function(){
 /*****End Product Constructor******/
 /**********************************/
 
-//set messages for Greeting
-function setStartMessage() {
-  //change the messages if there is a stored session
-  if (localStorage.sessionDataStorage) {
-    participation_message_text = 'Thank you for returning to finish our survey.  Traffic obviously let up and you made it home!';
-    click_message_text = 'Click to resume session.';
-    start_btn_text = 'Resume';
-  }
-  greeting_salutation.textContent = greeting_salutation_text;
-  participation_message.textContent = participation_message_text;
-  click_message.textContent = click_message_text;
-  start_btn.textContent = start_btn_text;
-}
-
-function setThankYouMessage(){
-  participation_message_text = 'Thank you for finishing our survey .  Keep an eye out for the first edition of Bus Mall!';
-  click_message_text = 'Click to see results';
-  start_btn_text = 'Results';
-  //change the messages if there is a stored session
-  if (localStorage.sessionDataStorage) {
-    participation_message_text = 'Thank you for starting our survey .  Please do not forget to return and finish your session';
-    click_message_text = '';
-    start_btn_text = 'Close';
-  }
-
-  greeting_salutation_text = 'Thanks You';
-  greeting_salutation.textContent = greeting_salutation_text;
-  participation_message.textContent = participation_message_text;
-  click_message.textContent = click_message_text;
-  start_btn.textContent = start_btn_text;
-  // change the event listener
-  setSalutationListener();
-}
-
-function giveThanks(){
-  setThankYouMessage();
-  welcome.classList.remove('close');
-
-};
-
-// change the event listener
-function setSalutationListener() {
-  start_btn.removeEventListener('click', initProgram);
-  start_btn.addEventListener('click', logResults);
-  if (localStorage.sessionDataStorage) {
-    start_btn.removeEventListener('click', logResults);
-    start_btn.addEventListener('click', function(){
-      welcome.classList.add('close');
-      logo_large.classList.remove('close');
-    });
-  }
-
-  selections.classList.add('close');
-}
-
-
-//function to start the selection process on click of the start button (AMAZE ME)
-function welcome_start(){
-  setStartMessage();
-  //activate link for persistant chart data
-  all_data_link.addEventListener('click', open_all_data_login);
-  start_btn.addEventListener('click', initProgram);
-}
-
-//persistant data chart login functions
-function open_all_data_login(e){
-  e.preventDefault();
-  //add event listeners for login buttons
-  all_data_cancel_btn.addEventListener('click', close_all_data_login);
-  all_data_submit_btn.addEventListener('click', show_all_data);
-
-  all_data_login.classList.toggle('section_active');
-}
-
-function close_all_data_login(e){
-  e.preventDefault();
-  all_data_login.classList.remove('section_active');
-}
-
-function show_all_data(e){
-  e.preventDefault();
-  all_data_login.classList.toggle('section_active');
-  //close visible sections
-  for (var i = 0; i < sections.length; i++){
-    if (sections[i].className != 'close' && sections[i].id != 'all_data_login'){
-      sections[i].classList.add('close');
-    }
-  }
-  create_persistantData_chart();
-}
-//*************************************************//
-
-
 function build_product_objects(){
   for (var i = 0; i < imageCount; i++){
     //put product in an object with a key of product name
@@ -244,7 +151,6 @@ function initProgram(){
   initRound();
 }
 
-
 //Function to add images to the page
 function initRound(){
   roundCount++;
@@ -254,7 +160,6 @@ function initRound(){
     image_display.classList.add('close');
     save_persistant_data();
     giveThanks();
-    //logResults();
     return;
   }
   var newImageElement;
@@ -333,16 +238,9 @@ function uniqueRandomNumbers(max_num , min_num){
   return unique_Nums;
 }
 
-function create_persistantData_chart(){
-  build_product_objects();
-  load_persistant_data();
-  logResults();
-}
-
 //function to iniitiate chart.js
 function logResults(){
   //hide selections window
-  ///selections.classList.add('close');
   welcome.classList.add('close');
   results_container.classList.remove('close');
   var chartParamiters = new ChartDataSet(allProducts).chartParams;
@@ -350,35 +248,6 @@ function logResults(){
   if (chart) chart.destroy();
   chart = new Chart(ctx, chartParamiters);
   canvas.addEventListener('click', open_reference_image);
-  //save_session_data();
-  //console.log('sessionDataStorage', sessionDataStorage);
-  //save_persistant_data();
-  //console.log('persistentDataStorage', persistentDataStorage);
-}
-
-//function to open small product image when clicking on a bar in the chart
-function open_reference_image(evt) {
-  //chart.js api call
-  var item = chart.getElementAtEvent(evt)[0];
-  if (item) {
-    var label = item._view.label;
-    // use the label as the key for a product object
-    var item_imagePath = allProducts[label].imagePath;
-    displayImage(item_imagePath);
-  }
-}
-
-//show the image far a clicked bar
-function displayImage(path){
-  image_div.innerHTML = '';
-  var small_image = document.createElement('img');
-  small_image.setAttribute('src', path);
-  small_image.addEventListener('click', function(){
-    image_div.classList.add('close');
-    image_div.innerHTML = '';
-  });
-  image_div.appendChild(small_image);
-  image_div.classList.remove('close');
 }
 
 /**********************************************/
@@ -458,15 +327,140 @@ ChartDataSet.prototype.processProductData = function(){
 };
 
 
-/*************************/
-/******test stuff*********/
+//************************//
+//******* modals *********//
 
-/*
+//set messages for Greeting
+function setStartMessage() {
+  //change the messages if there is a stored session
+  if (localStorage.sessionDataStorage) {
+    participation_message_text = 'Thank you for returning to finish our survey.  Traffic obviously let up and you made it home!';
+    click_message_text = 'Click to resume session.';
+    start_btn_text = 'Resume';
+  }
+  greeting_salutation.textContent = greeting_salutation_text;
+  participation_message.textContent = participation_message_text;
+  click_message.textContent = click_message_text;
+  start_btn.textContent = start_btn_text;
+}
+
+function setThankYouMessage(){
+  participation_message_text = 'Thank you for finishing our survey .  Keep an eye out for the first edition of Bus Mall!';
+  click_message_text = 'Click to see results';
+  start_btn_text = 'Results';
+  //change the messages if there is a stored session
+  if (localStorage.sessionDataStorage) {
+    participation_message_text = 'Thank you for starting our survey .  Please do not forget to return and finish your session';
+    click_message_text = '';
+    start_btn_text = 'Close';
+  }
+
+  greeting_salutation_text = 'Thanks You';
+  greeting_salutation.textContent = greeting_salutation_text;
+  participation_message.textContent = participation_message_text;
+  click_message.textContent = click_message_text;
+  start_btn.textContent = start_btn_text;
+  // change the event listener
+  setSalutationListener();
+}
+
+function giveThanks(){
+  setThankYouMessage();
+  welcome.classList.remove('close');
+
+};
+
+// change the event listener
+function setSalutationListener() {
+  start_btn.removeEventListener('click', initProgram);
+  start_btn.addEventListener('click', logResults);
+  if (localStorage.sessionDataStorage) {
+    start_btn.removeEventListener('click', logResults);
+    start_btn.addEventListener('click', function(){
+      welcome.classList.add('close');
+      logo_large.classList.remove('close');
+    });
+  }
+
+  selections.classList.add('close');
+}
+
+close_canvas_btn.addEventListener('click', closeCanvas);
+
+function closeCanvas(){
+  logo_large.classList.remove('close');
+  results_container.classList.add('close');
+  if (chart) chart.destroy();
+}
+
+//function to start the selection process on click of the start button (AMAZE ME)
+function welcome_start(){
+  setStartMessage();
+  //activate link for persistant chart data
+  all_data_link.addEventListener('click', open_all_data_login);
+  start_btn.addEventListener('click', initProgram);
+}
+
+//persistant data chart login functions
+function open_all_data_login(e){
+  e.preventDefault();
+  //add event listeners for login buttons
+  all_data_cancel_btn.addEventListener('click', close_all_data_login);
+  all_data_submit_btn.addEventListener('click', show_all_data);
+
+  all_data_login.classList.toggle('section_active');
+}
+
+function close_all_data_login(e){
+  e.preventDefault();
+  all_data_login.classList.remove('section_active');
+}
+
+function show_all_data(e){
+  e.preventDefault();
+  all_data_login.classList.toggle('section_active');
+  //close visible sections
+  for (var i = 0; i < sections.length; i++){
+    if (sections[i].className != 'close' && sections[i].id != 'all_data_login'){
+      sections[i].classList.add('close');
+    }
+  }
+  create_persistantData_chart();
+}
+
+//function to open small product image when clicking on a bar in the chart
+function open_reference_image(evt) {
+  //chart.js api call
+  var item = chart.getElementAtEvent(evt)[0];
+  if (item) {
+    var label = item._view.label;
+    // use the label as the key for a product object
+    var item_imagePath = allProducts[label].imagePath;
+    displayImage(item_imagePath);
+  }
+}
+
+//show the image far a clicked bar
+function displayImage(path){
+  image_div.innerHTML = '';
+  var small_image = document.createElement('img');
+  small_image.setAttribute('src', path);
+  small_image.addEventListener('click', function(){
+    image_div.classList.add('close');
+    image_div.innerHTML = '';
+  });
+  image_div.appendChild(small_image);
+  image_div.classList.remove('close');
+}
+
+/*************************/
+/******localStorage*********/
+
+/* data structures
 var persistentDataStorage = {
 totalPersistantRounds:
   productName: {views: clicks:}
 };
-
 
 var sessionDataStorage = {
   productName: {views: clicks:},
@@ -475,6 +469,12 @@ var sessionDataStorage = {
   previous_unique: []
 };
 */
+
+function create_persistantData_chart(){
+  build_product_objects();
+  load_persistant_data();
+  logResults();
+}
 
 
 function saveSession(){

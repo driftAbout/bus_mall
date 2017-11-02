@@ -10,7 +10,7 @@ main {
   margin-top: 140px;
 }
 
-header{
+header {
   width: 100%;
   position: fixed;
   top: 0;
@@ -18,7 +18,7 @@ header{
   z-index: 9;
 }
 
-header section{
+header section {
   width: 960px;
   margin: 0 auto;
   height: 100px;
@@ -31,7 +31,7 @@ header h1 {
   color: #eee;
 }
 
-header h1 span:first-of-type{
+header h1 span:first-of-type {
   font-size: 60px;
   text-transform: lowercase;
 }
@@ -56,9 +56,9 @@ footer {
 }
 
 footer .pattern {
-  display:block;
+  display: block;
   width: 100%;
-  height:10px;
+  height: 10px;
 }
 
 footer p {
@@ -142,7 +142,7 @@ footer p {
   margin-bottom: 50px;
 }
 
-#welcome p span:first-of-type{
+#welcome p span:first-of-type {
   font-size: 60px;
   text-transform: lowercase;
 }
@@ -151,7 +151,7 @@ footer p {
   margin-top: 20px;
 }
 
-#start, #save_session_btn {
+#start, #save_session_btn, #close_canvas_btn {
   cursor: pointer;
   padding: 20px;
   margin-top: 20px;
@@ -165,7 +165,7 @@ footer p {
   border: 2px solid #ddd;
 }
 
-#save_session_btn {
+#save_session_btn, #close_canvas_btn {
   padding: 5px 10px;
   font-size: 14px;
   margin: 0 15px;
@@ -174,6 +174,13 @@ footer p {
   right: 0;
 }
 
+#close_canvas_btn {
+  font-size: 14px;
+  margin: 0;
+  top: -10px;
+  left: 70px;
+  box-shadow: #333 1px 1px 5px 0;
+}
 
 #results.close {
   width: 0;
@@ -198,7 +205,7 @@ footer p {
   border-radius: 0;
   background: #FFF;
   box-shadow: none;
-  text-align:center;
+  text-align: center;
 }
 
 
@@ -214,7 +221,6 @@ footer p {
   font-size: 120px;
   text-transform: lowercase;
 }
-
 
 img{
   display:  block;
@@ -250,18 +256,18 @@ img.rejected {
 
 }
 #small_image img {
-  height:120px;
-  width:120px;
-  padding:40px;
+  height: 120px;
+  width: 120px;
+  padding: 40px;
 }
 
 /********************/
 /****login stuff****/
 
 #all_data_login.section_active {
-  max-height:400px;
-  opacity:1;
-  overflow:visible;
+  max-height: 400px;
+  opacity: 1;
+  overflow: visible;
   transition: 350ms;
 }
 
@@ -272,7 +278,7 @@ img.rejected {
   position: absolute;
   z-index: 8;
   width: 960px;
-  margin-top:70px;
+  margin-top: 70px;
 }
 
 #all_data_login div {
@@ -280,26 +286,26 @@ img.rejected {
   margin: 0 auto;
   background:  #F7D50A;
   border-radius: 5px;
-  border:2px solid #777;
+  border: 2px solid #777;
   box-shadow: #333 3px 3px 20px 0;
 }
 
-#all_data_login input[type="text"], #all_data_login input[type="password"]{
+#all_data_login input[type="text"], #all_data_login input[type="password"] {
   padding: 7px;
   border: solid 1px #333;
   border-radius:  3px;
-  width:240px;
-  height:32px;
+  width: 240px;
+  height: 32px;
   font-size: 14px;
   margin-top: 5px;
 }
 
 #all_data_login button {
-    padding:10px;
-    border-radius:3px;
+    padding: 10px;
+    border-radius: 3px;
     border: none;
     cursor: pointer;
-    margin-right:10px;
+    margin-right: 10px;
     float: right;
     font-weight: bold;
     font-size: 14px;
@@ -327,16 +333,16 @@ img.rejected {
 }
 
 #all_data_form fieldset {
-  margin:15px auto;
+  margin: 15px auto;
 }
 
-#all_data_form fieldset:last-of-type{
+#all_data_form fieldset:last-of-type {
   width: 290px;
   padding-top: 0;
   margin-bottom: 0;
 }
 
-#all_data_form fieldset:first-of-type{
+#all_data_form fieldset:first-of-type {
   border: 2px solid #555;
 }
 
@@ -346,22 +352,22 @@ img.rejected {
   padding: 0 15px;
 }
 
-#all_data_login #all_data_form label{
+#all_data_login #all_data_form label {
   margin-top:10px;
 }
 
-#all_data_login h3{
-  color:#252525;
+#all_data_login h3 {
+  color: #252525;
   font-weight: bold;
   font-size: 22px;
   margin-left: 20px;
   padding-top: 20px;
 }
 
-form{
-  margin:0 auto;
-  padding:20px;
-  width:300px;
+form {
+  margin: 0 auto;
+  padding: 20px;
+  width: 300px;
 
 }
 
@@ -371,34 +377,34 @@ fieldset {
   margin-bottom:10px;
 }
 
-fieldset div{
-  margin-right:30px;
+fieldset div {
+  margin-right: 30px;
   float: left;
 }
 
-fieldset:last-child{
-  width:315px;
-  margin:0;
+fieldset:last-child {
+  width: 315px;
+  margin: 0;
 }
 
-label{
-  color:#252525;
+label {
+  color: #252525;
   font-weight: bold;
   font-size: 18px;
   display: block;
   padding-bottom: 2px;
 }
 
-input{
-  margin-top:7px;
+input {
+  margin-top: 7px;
 }
 
-input[type="text"]{
+input[type="text"] {
   padding: 7px;
   border: solid 1px #333;
   border-radius:  3px;
-  width:240px;
-  height:32px;
+  width: 240px;
+  height: 32px;
   font-size: 14px;
   margin-top: 7px;
 }
