@@ -151,7 +151,7 @@ footer p {
   margin-top: 20px;
 }
 
-#start {
+#start, #save_session_btn {
   cursor: pointer;
   padding: 20px;
   margin-top: 20px;
@@ -163,6 +163,15 @@ footer p {
   border-style:none;
   border-radius: 5px;
   border: 2px solid #ddd;
+}
+
+#save_session_btn {
+  padding: 5px 10px;
+  font-size: 14px;
+  margin: 0 15px;
+  position: absolute;
+  top: 15px;
+  right: 0;
 }
 
 
@@ -223,14 +232,150 @@ img.rejected {
   padding:40px;
 }
 
-table {
-  border-collapse: collapse;
+/********************/
+/****login stuff****/
+
+#all_data_login.section_active {
+  max-height:400px;
+  opacity:1;
+  overflow:visible;
+  transition: 350ms;
 }
 
-td {
-  padding:5px;
+#all_data_login {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: 8;
+  width: 960px;
+  margin-top:70px;
 }
 
-tbody{
-    padding:20px;
+#all_data_login div {
+  width: 330px;
+  margin: 0 auto;
+  background:  #F7D50A;
+  border-radius: 5px;
+  border:2px solid #777;
+  box-shadow: #333 3px 3px 20px 0;
+}
+
+#all_data_login input[type="text"], #all_data_login input[type="password"]{
+  padding: 7px;
+  border: solid 1px #333;
+  border-radius:  3px;
+  width:240px;
+  height:32px;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+#all_data_login button {
+    padding:10px;
+    border-radius:3px;
+    border: none;
+    cursor: pointer;
+    margin-right:10px;
+    float: right;
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+#all_data_submit_btn {
+  margin-right:0;
+  color: #eeeeee;
+  background: #252525;
+
+}
+
+#all_data_cancel_btn {
+  background: #888;
+  color: #333;
+}
+
+#all_data_link {
+  float: right;
+  margin: 30px;
+  font-family: helvetica;
+  color: #777;
+  cursor: pointer;
+  padding: 5px;
+}
+
+#all_data_form fieldset {
+  margin:15px auto;
+}
+
+#all_data_form fieldset:last-of-type{
+  width: 290px;
+  padding-top: 0;
+  margin-bottom: 0;
+}
+
+#all_data_form fieldset:first-of-type{
+  border: 2px solid #555;
+}
+
+#all_data_login #all_data_form {
+  margin: 0 auto;
+  width: 290px;
+  padding: 0 15px;
+}
+
+#all_data_login #all_data_form label{
+  margin-top:10px;
+}
+
+#all_data_login h3{
+  color:#252525;
+  font-weight: bold;
+  font-size: 22px;
+  margin-left: 20px;
+  padding-top: 20px;
+}
+
+form{
+  margin:0 auto;
+  padding:20px;
+  width:300px;
+
+}
+
+fieldset {
+  padding:10px;
+  border: 0;
+  margin-bottom:10px;
+}
+
+fieldset div{
+  margin-right:30px;
+  float: left;
+}
+
+fieldset:last-child{
+  width:315px;
+  margin:0;
+}
+
+label{
+  color:#252525;
+  font-weight: bold;
+  font-size: 18px;
+  display: block;
+  padding-bottom: 2px;
+}
+
+input{
+  margin-top:7px;
+}
+
+input[type="text"]{
+  padding: 7px;
+  border: solid 1px #333;
+  border-radius:  3px;
+  width:240px;
+  height:32px;
+  font-size: 14px;
+  margin-top: 7px;
 }

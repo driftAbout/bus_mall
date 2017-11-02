@@ -9,24 +9,42 @@
   <body>
      <header>
        <span class="pattern"></span>
-
+       <p id="all_data_link">View All Data</p>
        <section>
          <h1><span>bus</span><span>mall</span></h1>
        </section>
-
      <span class="pattern"></span>
      </header>
 
      <main>
+       <section id="all_data_login">
+          <div>
+        	<h3>View All Data</h3>
+        	<form id="all_data_form">
+        	  <fieldset>
+          		<label for="user_name">User Name</label>
+          		<input type="text" name="user_name" value="" placeholder="User Name">
+          		<label for="user_password">Password</label>
+          		<input type="password" name="user_password" placeholder="Password">
+        	  </fieldset>
+        	  <fieldset>
+          		<button id="all_data_submit_btn" type="submitt">Enter</button>
+          		<button id="all_data_cancel_btn" formnovalidate>Cancel</button>
+        	  </fieldset>
+        	</form>
+          </div>
+        </section>
+
       <section id="welcome">
          <p><span>bus</span><span>mall</span></p>
          <p>Welcomes You!</p>
-         <p>You have been selected to participate in our survey because you are currently stuck on a bus in traffic!</p>
+         <p>You have been selected to participate in our survey because you are currently on a bus stuck in traffic!</p>
          <p>Click to get started.</p>
          <button id="start" type="button" name="amaze_me">amaze me</button>
        </section>
 
        <section id="selections" class="close">
+         <button id="save_session_btn">Save Session</button>
          <h2>Which one of these would not buy the other?</h2>
          <div id="image_display"></div>
        </section>

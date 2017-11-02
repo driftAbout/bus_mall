@@ -2,11 +2,15 @@
 
 var product;
 //variable for object key
-var imageKey;
+var productKey;
 //Object to be popolated with product objects
 var allProducts = {};
 //array of product keys;
 var productKeys;
+//variables for setting local storage
+var sessionDataStorage;
+var persistentDataStorage;
+var totalPersistantRounds = 0;
 
 //list of images
 var imageNames = ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakfast.jpg', 'bubblegum.jpg', 'chair.jpg', 'cthulhu.jpg', 'dog-duck.jpg', 'dragon.jpg', 'pen.jpg', 'pet-sweep.jpg', 'scissors.jpg', 'shark.jpg', 'sweep.png', 'tauntaun.jpg', 'unicorn.jpg', 'usb.gif', 'water-can.jpg', 'wine-glass.jpg'];
@@ -22,17 +26,28 @@ var image_display = document.getElementById('image_display');
 var welcome = document.getElementById('welcome');
 var start = document.getElementById('start');
 var image_div = document.getElementById('small_image');
+var save_session_btn = document.getElementById('save_session_btn');
+
+//elements to Access persistant data chart
+var all_data_login = document.getElementById('all_data_login');
+var all_data_link = document.getElementById('all_data_link');
+var all_data_submit_btn = document.getElementById('all_data_submit_btn');
+var all_data_cancel_btn = document.getElementById('all_data_cancel_btn');
+var main = document.getElementsByTagName('main')[0];
+var sections = main.getElementsByTagName('section');
 
 // array to hold unique index numbers
 var unique_Nums;
 // array to hold previous set of unique index numbers
 var previous_unique = [];
+
+var saved_unique_Nums = [];
 // session counter
 var roundCount = 0;
-var totalRounds = 25;
+var totalRounds = 3;
 
 //time delay between choices
-var timeDelay = 750;
+var timeDelay = 500;
 var targetImages;
 
 //**********chart stuff *****************///
@@ -44,18 +59,16 @@ var ctx = canvas.getContext('2d');
 var chart;
 var chartType = 'bar';
 var percent_background_color = '#C3B867';
-var percent_border_color = '#000000';
 var views_background_color = '#767254';
-var views_border_color = '#767254';
 var clicked_background_color = '#F7D50A';
-var clicked_border_color = '#000000';
+var dataSet_border_color = '#eeeeee';
 var roundsAxes_labelString = 'Number of Selection Rounds';
 var percentAxes_labelString = 'Percentage of Clicks / View';
 var yAxes_fontSize = 18;
 
 //********* start *******//
 welcome_start();
-console.log('allProducts', allProducts);
+console.log(' start allProducts', allProducts);
 
 
 /*****************************************/
@@ -83,18 +96,16 @@ Product.prototype.createImageInfo = function(){
 Product.prototype.viewCounter = function(){
   this.views++;
   this.calulatePercentage();
-  //this.percentSelected = Math.round((this.clicks / this.views) * 1000) / 10;
 };
 
 Product.prototype.clickCounter = function(){
   this.clicks++;
   this.calulatePercentage();
-  //this.percentSelected = Math.round((this.clicks / this.views) * 1000) / 10;
 };
 
 Product.prototype.calulatePercentage = function(){
-  //calculate percentage to 1 decimal place
-  this.percentSelected = Math.round((this.clicks / this.views) * 1000) / 10;
+  //calculate percentage to 1 decimal place if clicks is not zero
+  if (this.clicks != 0) this.percentSelected = Math.round((this.clicks / this.views) * 1000) / 10;
 };
 
 /*****End Product Constructor******/
@@ -104,16 +115,45 @@ Product.prototype.calulatePercentage = function(){
 
 //function to start the selection process on click of the start button (AMAZE ME)
 function welcome_start(){
+  //check for a saved session
+  if (localStorage.sessionDataStorage){
+    start.textContent = 'Resume';
+  }
+  //activate link for persistant chart data
+  all_data_link.addEventListener('click', open_all_data_login);
   start.addEventListener('click', initProgram);
 }
 
-//function to create objects
-function initProgram(){
-  //hide the welcome window
-  welcome.classList.add('close');
-  //show the selections section
-  selections.classList.remove('close');
+//persistant data chart login functions
+function open_all_data_login(e){
+  e.preventDefault();
+  //add event listeners for login buttons
+  all_data_cancel_btn.addEventListener('click', close_all_data_login);
+  all_data_submit_btn.addEventListener('click', show_all_data);
 
+  all_data_login.classList.toggle('section_active');
+}
+
+function close_all_data_login(e){
+  e.preventDefault();
+  all_data_login.classList.remove('section_active');
+}
+
+function show_all_data(e){
+  e.preventDefault();
+  all_data_login.classList.toggle('section_active');
+  //close visible sections
+  for (var i = 0; i < sections.length; i++){
+    if (sections[i].className != 'close' && sections[i].id != 'all_data_login'){
+      sections[i].classList.add('close');
+    }
+  }
+  create_persistantData_chart();
+}
+//*************************************************//
+
+
+function build_product_objects(){
   for (var i = 0; i < imageCount; i++){
     //put product in an object with a key of product name
     product = new Product(imageNames[i]);
@@ -121,7 +161,22 @@ function initProgram(){
   }
   //get array of product keys
   productKeys = Object.keys(allProducts);
-  // first show choice
+}
+
+
+//function to create objects
+function initProgram(){
+  //hide the welcome window
+  welcome.classList.add('close');
+  //show the selections section
+  selections.classList.remove('close');
+  save_session_btn.addEventListener('click', saveSession);
+
+  build_product_objects();
+  //if there was a saved session the data will load
+  //if not it behaves as if a new session
+  load_session_data();
+  // show image choices
   initRound();
 }
 
@@ -132,6 +187,7 @@ function initRound(){
   //quit giving choices after the number of rounds is done
   if (roundCount > totalRounds){
     image_display.classList.add('close');
+    save_persistant_data()
     logResults();
     return;
   }
@@ -142,12 +198,12 @@ function initRound(){
   //loop through array of indexes
   for(var i = 0; i < randomIndexes.length; i++){
     //create fetch key using index of key array
-    imageKey = productKeys[randomIndexes[i]];
+    productKey = productKeys[randomIndexes[i]];
     //get Product object with key and incriment view counter
-    allProducts[imageKey].viewCounter();
-    imgSrc = allProducts[imageKey].imagePath;
+    allProducts[productKey].viewCounter();
+    imgSrc = allProducts[productKey].imagePath;
     newImageElement = document.createElement('img');
-    newImageElement.setAttribute('id', imageKey);
+    newImageElement.setAttribute('id', productKey);
     newImageElement.setAttribute('src', imgSrc);
     image_display.appendChild(newImageElement);
   }
@@ -197,7 +253,10 @@ function goAgain(){
 function uniqueRandomNumbers(max_num , min_num){
   var randomNUm;
   unique_Nums = [];
-
+  if (! saved_unique_Nums.length ){
+    unique_Nums = saved_unique_Nums;
+    saved_unique_Nums = [];
+  }
   while( unique_Nums.length < 3 ){
     randomNUm = Math.floor((Math.random() * (max_num - min_num)) + min_num);
     if ( ! unique_Nums.includes(randomNUm) && ! previous_unique.includes(randomNUm)){
@@ -208,14 +267,26 @@ function uniqueRandomNumbers(max_num , min_num){
   return unique_Nums;
 }
 
+function create_persistantData_chart(){
+  build_product_objects();
+  load_persistant_data();
+  logResults();
+}
+
 //function to iniitiate chart.js
 function logResults(){
   //hide selections window
   selections.classList.add('close');
   results_container.classList.remove('close');
   var chartParamiters = new ChartDataSet(allProducts).chartParams;
+  //reset the canvas if it already has a chart
+  if (chart) chart.destroy();
   chart = new Chart(ctx, chartParamiters);
   canvas.addEventListener('click', open_reference_image);
+  //save_session_data();
+  //console.log('sessionDataStorage', sessionDataStorage);
+  //save_persistant_data();
+  //console.log('persistentDataStorage', persistentDataStorage);
 }
 
 //function to open small product image when clicking on a bar in the chart
@@ -254,21 +325,21 @@ function ChartDataSet(dataObject){
     label: 'Percent Selected',
     yAxisID: 'percent_axis',
     backgroundColor: percent_background_color,
-    borderColor: percent_border_color,
+    borderColor: dataSet_border_color,
     data: []
   };
   this.views_data_set = {
     label: 'Product Views',
     yAxisID: 'rounds_axis',
     backgroundColor: views_background_color,
-    borderColor: views_border_color,
+    borderColor: dataSet_border_color,
     data: []
   };
   this.clicked_data_set = {
     label: 'Product Selections',
     yAxisID: 'rounds_axis',
     backgroundColor: clicked_background_color,
-    borderColor: clicked_border_color,
+    borderColor: dataSet_border_color,
     data: []
   };
   this.xAxes = [{
@@ -292,7 +363,7 @@ function ChartDataSet(dataObject){
     position: 'left',
     scaleLabel: {labelString: roundsAxes_labelString, display: true, fontSize: yAxes_fontSize},
     ticks: {
-      suggestedMax: totalRounds,
+      suggestedMax: totalRounds + totalPersistantRounds,
       min: 0
     }
   };
@@ -318,3 +389,89 @@ ChartDataSet.prototype.processProductData = function(){
     this.clicked_data_set.data.push(prodData.clicks);
   }
 };
+
+
+/*************************/
+/******test stuff*********/
+
+/*
+var persistentDataStorage = {
+totalPersistantRounds:
+  productName: {views: clicks:}
+};
+
+
+var sessionDataStorage = {
+  productName: {views: clicks:},
+  roundCount: ,
+  previous_unique: []
+};
+*/
+
+function saveSession(){
+  selections.classList.add('close');
+  save_session_data();
+}
+
+function save_session_data(){
+  sessionDataStorage = save_views_clicks();
+  sessionDataStorage.roundCount = roundCount;
+  sessionDataStorage.previous_unique = previous_unique;
+  localStorage.sessionDataStorage = JSON.stringify(sessionDataStorage);
+}
+
+
+function save_persistant_data(){
+  var sessionData = save_views_clicks();
+  if (localStorage.persistentDataStorage){
+    persistentDataStorage = JSON.parse(localStorage.persistentDataStorage);
+    for (var i = 0; i < productKeys.length; i++){
+      productKey = productKeys[i];
+      persistentDataStorage[productKey].views += sessionData[productKey].views;
+      persistentDataStorage[productKey].clicks += sessionData[productKey].clicks;
+    }
+  }
+  if(! persistentDataStorage) persistentDataStorage = sessionData;
+  if (isNaN(persistentDataStorage.totalPersistantRounds += (roundCount - 1))) persistentDataStorage.totalPersistantRounds = (roundCount - 1);
+  localStorage.persistentDataStorage = JSON.stringify(persistentDataStorage);
+}
+
+function load_views_clicks(storage_data){
+  for ( var i = 0; i < productKeys.length; i++){
+    productKey = productKeys[i];
+    allProducts[productKey].views = storage_data[productKey].views;
+    allProducts[productKey].clicks = storage_data[productKey].clicks;
+    allProducts[productKey].calulatePercentage();
+  }
+}
+
+function save_views_clicks(){
+  var storage_data = {};
+  for (var i = 0; i < productKeys.length; i++){
+    productKey = productKeys[i];
+    storage_data[productKey] = {};
+    storage_data[productKey].views = allProducts[productKey].views;
+    storage_data[productKey].clicks = allProducts[productKey].clicks;
+  }
+  return storage_data;
+}
+
+function load_persistant_data(){
+  if (localStorage.persistentDataStorage){
+    persistentDataStorage = JSON.parse(localStorage.persistentDataStorage);
+    totalPersistantRounds = persistentDataStorage.totalPersistantRounds;
+    load_views_clicks(persistentDataStorage);
+  }
+  return;
+}
+
+function load_session_data(){
+  if (localStorage.sessionDataStorage){
+    sessionDataStorage = JSON.parse(localStorage.sessionDataStorage);
+    roundCount = sessionDataStorage.roundCount;
+    totalRounds = totalRounds - roundCount;
+    previous_unique = sessionDataStorage.previous_unique;
+    load_views_clicks(sessionDataStorage);
+  }
+  return;
+}
