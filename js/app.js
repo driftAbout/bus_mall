@@ -47,6 +47,9 @@ var all_data_submit_btn = document.getElementById('all_data_submit_btn');
 var all_data_cancel_btn = document.getElementById('all_data_cancel_btn');
 var main = document.getElementsByTagName('main')[0];
 var sections = main.getElementsByTagName('section');
+//counter displays
+var round_count_display = document.getElementById('round_count');
+var total_rounds_display = document.getElementById('total_rounds');
 
 // array to hold unique index numbers
 var unique_Nums;
@@ -138,6 +141,8 @@ function build_product_objects(){
 function initProgram(){
   //hide the welcome window
   welcome.classList.add('close');
+  //add display counter total
+  total_rounds_display.textContent = totalRounds;
   //show the selections section
   selections.classList.remove('close');
   save_session_btn.addEventListener('click', saveSession);
@@ -154,6 +159,7 @@ function initProgram(){
 //Function to add images to the page
 function initRound(){
   roundCount++;
+  round_count_display.textContent = roundCount;
   console.log('roundCount: ', roundCount);
   //quit giving choices after the number of rounds is done
   if (roundCount > totalRounds){

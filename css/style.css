@@ -108,6 +108,25 @@ footer p {
   margin-bottom: 20px;
 }
 
+#selections div:last-of-type {
+  float: right;
+  margin: 30px 20px;
+}
+
+#selections div:last-of-type span {
+    margin: 3px;
+    color: #777;
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+#round_count {
+  text-align: right;
+}
+#total_rounds{
+  text-align: right;
+}
+
 #welcome.close, #logo_large.close {
   overflow: hidden;
   height: 0;
